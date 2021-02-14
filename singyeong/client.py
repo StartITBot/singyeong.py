@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import signal
-import sys
 import traceback
 import warnings
 
@@ -26,8 +25,11 @@ class Client:
         self.dsn = DSN(dsn)
         self.loop = asyncio.get_event_loop() if loop is None else loop
 
-        if self.dsn.encoding == Encoding.MSGPACK:
-            raise ImportError("Unsupported MSGPACK encoding. Type 'pip install msgpack'.")
+        if self.dsn.encoding == Encoding.MSGPACK:  # Is msgpack installed?
+            try:
+                import msgpack
+            except ImportError:
+                raise ImportError("Unsupported MSGPACK encoding. Type 'pip install msgpack'.")
 
         if self.dsn.encoding == Encoding.ETF:
             warnings.warn(f"Unsupported ETF encoding. Switching to JSON.", UnsupportedEncoding)

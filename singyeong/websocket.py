@@ -6,8 +6,8 @@ from typing import Union
 
 import websockets
 
-from singyeong.message import Message
-from singyeong.utils import create_task
+from .message import Message
+from .utils import create_task
 
 try:
     import msgpack
@@ -19,7 +19,7 @@ try:
 except ImportError:
     import json
 
-from singyeong.enums import Encoding, OpCode
+from .enums import Encoding, OpCode
 
 log = logging.getLogger(__name__)
 
@@ -148,7 +148,7 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
         encoded_data = self._encode(data)
         await self.send(encoded_data)
 
-    def _encode(self, data: websockets.Data) -> bytes:
+    def _encode(self, data: websockets.Data) -> Union[bytes, str]:
         if self.encoding == Encoding.JSON:
             return json.dumps(data)
         if self.encoding == Encoding.MSGPACK:

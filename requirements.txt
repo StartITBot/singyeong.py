@@ -1,0 +1,2 @@
+setuptools~=53.0.0
+websockets~=8.1

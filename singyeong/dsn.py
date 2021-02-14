@@ -1,8 +1,8 @@
 import re
 from typing import Optional
 
-from singyeong.enums import Encoding
-from singyeong.exceptions import InvalidDSN
+from .enums import Encoding
+from .exceptions import InvalidDSN
 
 RE_SINGYEONG_DSN = re.compile(r'^(?P<encryption>s)?singyeong:\/\/(?P<login>[^@:]+)(?::(?P<password>[^@]+))?@(?P<host>'
                               r'[\w-]+)(?::(?P<port>\d{1,5}))?\/?(?:\?encoding=(?P<encoding>json|etf|msgpack))?')
