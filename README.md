@@ -67,6 +67,73 @@ def on_error(exc):
 ```
 If you want to change this behaviour and handle the exception for whatever reason yourself, this event can be overridden. Which, when done, will suppress the default action of printing the traceback.
 
+## Sending data
+
+```python
+import singyeong
+
+client = ...
+
+async def func():
+    target = singyeong.Target(
+        application="application id here",
+        restricted=True,
+        key="1234567890",
+        droppable=True,
+        optional=True,
+        selector=singyeong.Minimum("key"),
+        operators=[
+            singyeong.Equal("/key", "value"),
+            singyeong.LessThanEqual("/key2", 1234),
+            singyeong.And(
+                singyeong.GreaterThan("/key3", 10),
+                singyeong.LessThan("/key3", 20),
+            ),
+            singyeong.In("/key4", ["123", "456"])
+        ],
+    )
+    
+    payload = {"foo": "bar"}
+    
+    await client.send(target, payload)  # or await client.broadcast(...)
+```
+
+
+### Keyword arguments for singyeong.Target():
+
+**application**: ID of the application to query against \
+**restricted**: Whether or not to allow restricted-mode clients in the query results \
+**key**: The key used for consistent-hashing when choosing a client from the output \
+**droppable**: Whether or not this payload can be dropped if it isn't routable \
+**optional**: Whether or not this query is optional, ie. will be ignored and a client
+will be chosen randomly if it matches nothing. \
+**selector**: The selector used. May be None. \
+**operators**: The ops used for querying.
+
+### Available operators 
+
+ComparisonOperator(path, to)
+ - singyeong.Equal(...)
+ - singyeong.NotEqual(...)
+ - singyeong.GreaterThan(...)
+ - singyeong.GreaterThanEqual(...)
+ - singyeong.LessThan(...)
+ - singyeong.LessThanEqual(...)
+ - singyeong.In(...)
+ - singyeong.Contains(...)
+ - singyeong.NotContains(...)
+
+LogicalOperator(comparison_op1, comparison_op2, comparison_op3, ... )
+ - singyeong.And(...)
+ - singyeong.Or(...)
+ - singyeong.Nor(...)
+
+### Available selectors
+
+ - singyeong.Minimum(name)
+ - singyeong.Maximum(name)
+ - singyeong.Average(name)
+
 ## Run 신경 client 
 
 You can run 신경 client in the main loop or in the separate task (if you have e.g. discord.py running).
