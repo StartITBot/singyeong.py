@@ -1,3 +1,4 @@
+import asyncio
 from inspect import isawaitable as _isawaitable
 
 from .types import VersionType
@@ -9,6 +10,12 @@ async def maybe_coroutine(f, *args, **kwargs):
         return await value
     else:
         return value
+
+
+def create_task(f, *args, **kwargs) -> None:
+    value = f(*args, **kwargs)
+    if _isawaitable(value):
+        asyncio.create_task(value)
 
 
 def with_type(value):

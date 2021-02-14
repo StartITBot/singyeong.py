@@ -7,7 +7,7 @@ from typing import Union
 import websockets
 
 from singyeong.message import Message
-from singyeong.utils import maybe_coroutine
+from singyeong.utils import create_task
 
 try:
     import msgpack
@@ -40,9 +40,10 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
         self._latency = None
 
     async def close_connection(self):
+        await super().close_connection()
+
         if self.heartbeat_interval_task:
             self.heartbeat_interval_task.cancel()
-        return await super().close_connection()
 
     @property
     def latency(self):
@@ -67,7 +68,7 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
             return cls(
                 on_error=client.on_error,
                 on_ready=client._on_ready,
-                on_message=client.on_raw_packet,
+                on_message=client._on_raw_packet,
                 encoding=client.dsn.encoding,
                 auth=(client.dsn.login, client.dsn.password),
                 **kwargs
@@ -113,7 +114,7 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
                 return
 
             if op == OpCode.READY:
-                await maybe_coroutine(self.on_ready)
+                create_task(self.on_ready)
                 return
 
             if op == OpCode.HEARTBEAT_ACK:
@@ -121,19 +122,19 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
                 return
 
             if op == OpCode.DISPATCH:
-                self.loop.create_task(self.handle_dispatch(data))
+                self.handle_dispatch(data)
                 return
 
         except AssertionError:
             pass
         except Exception as ex:
-            await maybe_coroutine(self.on_error, ex)
+            create_task(self.on_error, ex)
 
-    async def handle_dispatch(self, data):
+    def handle_dispatch(self, data):
         if data['t'] in ("SEND", "BROADCAST"):
             payload = data['d']
 
-            await maybe_coroutine(
+            create_task(
                 self.on_message,
                 Message(
                     nonce=payload.get('nonce'),

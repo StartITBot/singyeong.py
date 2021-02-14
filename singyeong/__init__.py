@@ -11,6 +11,7 @@ from collections import namedtuple
 from .client import Client
 from .query import VersionType, Equal, NotEqual, GreaterThan, GreaterThanEqual, LessThan, LessThanEqual, \
     In, Contains, NotContains, And, Or, Nor, Minimum, Maximum, Average, Target
+from .message import Message
 
 VersionInfo = namedtuple('VersionInfo', 'major minor micro releaselevel serial')
 
