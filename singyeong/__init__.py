@@ -2,7 +2,7 @@ __title__ = 'singyeong'
 __author__ = 'StartIT'
 __license__ = 'MIT'
 __copyright__ = 'Copyright (c) 2021 StartIT'
-__version__ = '1.0.0a'
+__version__ = '1.0.0'
 
 __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
