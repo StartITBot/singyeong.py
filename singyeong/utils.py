@@ -12,10 +12,10 @@ async def maybe_coroutine(f, *args, **kwargs):
         return value
 
 
-def create_task(f, *args, **kwargs) -> None:
+def create_task(loop, f, *args, **kwargs) -> None:
     value = f(*args, **kwargs)
     if _isawaitable(value):
-        asyncio.create_task(value)
+        loop.create_task(value)
 
 
 def with_type(value):

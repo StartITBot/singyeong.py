@@ -114,7 +114,7 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
                 return
 
             if op == OpCode.READY:
-                create_task(self.on_ready)
+                create_task(self.loop, self.on_ready)
                 return
 
             if op == OpCode.HEARTBEAT_ACK:
@@ -128,13 +128,14 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
         except AssertionError:
             pass
         except Exception as ex:
-            create_task(self.on_error, ex)
+            create_task(self.loop, self.on_error, ex)
 
     def handle_dispatch(self, data):
         if data['t'] in ("SEND", "BROADCAST"):
             payload = data['d']
 
             create_task(
+                self.loop,
                 self.on_message,
                 Message(
                     nonce=payload.get('nonce'),

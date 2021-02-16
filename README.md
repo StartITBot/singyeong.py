@@ -6,6 +6,28 @@ An asynchronous client library for [신경](https://github.com/queer/singyeong),
 
 If 신경 is alpha quality software, then Singyeong.py is pre-alpha quality software. Expect things to break spectacularly.
 
+## Installing
+You can get the library directly from PyPI:
+```shell
+python3 -m pip install -U singyeong.py
+```
+If you are using Windows, then the following should be used instead:
+```shell
+py -3 -m pip install -U singyeong.py
+```
+### Install with faster json support
+
+```shell
+pip install singyeong.py[ujson]
+```
+
+### Install with msgpack support
+
+```shell
+pip install singyeong.py[msgpack]
+```
+
+
 ## Event Reference
 This section outlines the different types of events listened by Client.
 
@@ -236,3 +258,7 @@ stdout of your program.
 For more information, check the documentation and tutorial of the
 [logging](https://docs.python.org/3/library/logging.html) module.
 
+# To-Do
+ - Metadata support :)
+ - Queues
+ - Unit tests
