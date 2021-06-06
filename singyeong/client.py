@@ -37,7 +37,7 @@ class Client:
 
         self._metadata = {}
         self._closing = False
-        self._ready = asyncio.Event()
+        self._ready = asyncio.Event(loop=loop)
 
     @property
     def latency(self):
