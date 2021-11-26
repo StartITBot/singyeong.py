@@ -46,10 +46,6 @@ class Client:
 
     def event(self, coro):
         """A decorator that registers an event to listen to."""
-
-        if not asyncio.iscoroutinefunction(coro):
-            raise TypeError('event registered must be a coroutine function')
-
         setattr(self, coro.__name__, coro)
         log.debug('%s has successfully been registered as an event', coro.__name__)
         return coro
