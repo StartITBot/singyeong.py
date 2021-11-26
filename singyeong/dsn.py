@@ -1,11 +1,8 @@
-import re
+import urllib.parse
 from typing import Optional
 
 from .enums import Encoding
 from .exceptions import InvalidDSN
-
-RE_SINGYEONG_DSN = re.compile(r'^(?P<encryption>s)?singyeong:\/\/(?P<login>[^@:]+)(?::(?P<password>[^@]+))?@(?P<host>'
-                              r'[\w-]+)(?::(?P<port>\d{1,5}))?\/?(?:\?encoding=(?P<encoding>json|etf|msgpack))?')
 
 
 class DSN:
@@ -28,17 +25,17 @@ class DSN:
             self.encoding = dsn.encoding
             return
 
-        match = RE_SINGYEONG_DSN.fullmatch(dsn)
-        if not match:
-            raise InvalidDSN()
+        match: urllib.parse.ParseResult = urllib.parse.urlparse(dsn)
+        if match.scheme not in ("singyeong", "ssingyeong"):
+            raise InvalidDSN('unknown url type: %s' % match.scheme)
 
-        group = match.groupdict()
-        self.encryption = bool(group['encryption'])
-        self.login = group['login']
-        self.password = group['password']
-        self.host = group['host']
-        self.port = int(group['port'] or 80)
-        self.encoding = Encoding(group['encoding'] or "json")
+        self.encryption = match.scheme == "ssingyeong"
+        self.login = match.username
+        self.password = match.password
+        self.host = match.hostname
+        self.port = match.port or (443 if self.encryption else 80)
+        query = urllib.parse.parse_qs(match.query)
+        self.encoding = Encoding(query.get("encoding", ['json'])[0])
 
     def __str__(self):
         parts = []
