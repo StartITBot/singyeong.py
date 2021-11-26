@@ -29,6 +29,7 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
         self.client_id = uuid.uuid4()
         self.encoding = kwargs.pop("encoding")
         self.auth = kwargs.pop("auth")
+        self.namespace = kwargs.pop("namespace", None)
         self.on_ready = kwargs.pop("on_ready", lambda: ...)
         self.on_message = kwargs.pop("on_message", lambda _: ...)
         self.on_error = kwargs.pop("on_error", lambda _: ...)
@@ -71,6 +72,7 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
                 on_message=client._on_raw_packet,
                 encoding=client.dsn.encoding,
                 auth=(client.dsn.login, client.dsn.password),
+                namespace=client.namespace,
                 **kwargs
             )
 
@@ -106,6 +108,9 @@ class SingyeongSocket(websockets.WebSocketClientProtocol):
 
                 if self.auth[1]:
                     response['auth'] = self.auth[1]
+
+                if self.namespace:
+                    response['namespace'] = self.namespace
 
                 await self.send_json({
                     "op": OpCode.IDENTIFY,

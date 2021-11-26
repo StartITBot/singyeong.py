@@ -20,10 +20,11 @@ log = logging.getLogger(__name__)
 
 class Client:
     # noinspection PyTypeChecker
-    def __init__(self, dsn, *, loop=None):
+    def __init__(self, dsn, *, loop=None, namespace=None):
         self.ws = None
         self.dsn = DSN(dsn)
         self.loop = asyncio.get_event_loop() if loop is None else loop
+        self.namespace = namespace
 
         if self.dsn.encoding == Encoding.MSGPACK:  # Is msgpack installed?
             try:
